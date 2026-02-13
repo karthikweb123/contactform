@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Save User</title>
+</head>
+<body>
+
+  <form id="userForm">
+    <label for="fname">First name:</label><br>
+    <input type="text" id="fname" name="fname" required><br><br>
+
+    <label for="lname">Last name:</label><br>
+    <input type="text" id="lname" name="lname" required><br><br>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <p id="result"></p>
+
+  <script>
+    const form = document.getElementById("userForm");
+    const result = document.getElementById("result");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault(); // stop page reload
+
+      const firstname = document.getElementById("fname").value.trim();
+      const lastname = document.getElementById("lname").value.trim();
+
+      try {
+        const res = await fetch("http://localhost:5000/api/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ firstname, lastname })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          result.textContent = "Error: " + (data.message || "Failed");
+          return;
+        }
+        result.textContent = "Power: " + data.message;
+        form.reset();
+      } catch (err) {
+        result.textContent = "Network error. Is backend running?";
+      }
+    });
+  </script>
+
+</body>
+</html>
